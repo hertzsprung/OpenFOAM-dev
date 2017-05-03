@@ -1,3 +1,4 @@
 testOpenFOAM.C
+test_cubicFit.C
 
 EXE = $(FOAM_USER_APPBIN)/testOpenFOAM
