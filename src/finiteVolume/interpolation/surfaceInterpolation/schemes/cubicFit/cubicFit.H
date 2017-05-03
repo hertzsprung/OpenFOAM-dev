@@ -83,7 +83,7 @@ public:
 
     // Constructors
 
-		cubicFit(const fvMesh& mesh, Istream& is)
+        cubicFit(const fvMesh& mesh, Istream& is)
         :
             upwind<Type>
             (
@@ -92,7 +92,7 @@ public:
             )
         {}
 
-		cubicFit
+        cubicFit
         (
             const fvMesh& mesh,
             const surfaceScalarField& faceFlux,
@@ -100,22 +100,53 @@ public:
         )
         :
             upwind<Type>(mesh, faceFlux)
-		{}
+        {}
 
 
     // Member Functions
         //- Return true if this scheme uses an explicit correction
         virtual bool corrected() const
         {
-            return false;
+            return true;
+        }
+
+        //- Return the explicit correction to the face-interpolate
+        virtual tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
+        correction
+        (
+            const GeometricField<Type, fvPatchField, volMesh>& vf
+        ) const
+        {
+            const fvMesh& mesh = this->mesh();
+            tmp<GeometricField<Type, fvsPatchField, surfaceMesh>> tsfCorr
+            (
+                new GeometricField<Type, fvsPatchField, surfaceMesh>
+                (
+                    IOobject
+                    (
+                        vf.name(),
+                        mesh.time().timeName(),
+                        mesh,
+                        IOobject::NO_READ,
+                        IOobject::NO_WRITE,
+                        false
+                    ),
+                    mesh,
+                    dimensioned<Type>
+                    (
+                        vf.name(),
+                        vf.dimensions(),
+                        Zero
+                    )
+                )
+            );
+
+            return tsfCorr;
         }
 
         // Access
-
         // Check
-
         // Edit
-
         // Write
 
 

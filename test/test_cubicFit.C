@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "catch.hpp"
+#include "checks.H"
 #include "IStringStream.H"
 #include "tmp.H"
 #include "surfaceInterpolationScheme.H"
@@ -31,7 +32,7 @@ License
 namespace Foam
 {
 
-TEST_CASE("cubicFit_has_zero_correction_on_upwind")
+TEST_CASE("cubicFit_interpolates_constant_scalar_field")
 {
 	const Foam::Time runTime
     (
@@ -63,6 +64,18 @@ TEST_CASE("cubicFit_has_zero_correction_on_upwind")
         mesh
     );
 
+    const volScalarField T
+    (
+		Foam::IOobject
+		(
+            "T",
+            runTime.timeName(),
+            mesh
+        ),
+        mesh,
+        dimensionedScalar("T", dimless, scalar(1))
+    );
+
     IStringStream interpolationSchemeName("cubicFit");
     const tmp<surfaceInterpolationScheme<scalar> > tCubicFit = 
         surfaceInterpolationScheme<scalar>::New
@@ -73,6 +86,24 @@ TEST_CASE("cubicFit_has_zero_correction_on_upwind")
         );
 
     const surfaceInterpolationScheme<scalar>& cubicFit = tCubicFit();
+
+    const tmp<surfaceScalarField> Tf = cubicFit.interpolate(T);
+
+    const surfaceScalarField expectedTf
+    (
+		Foam::IOobject
+		(
+            "expectedTf",
+            runTime.timeName(),
+            mesh
+        ),
+        mesh,
+        dimensionedScalar("expectedTf", dimless, scalar(1))
+    );
+
+    // TODO replace checkEqual with a Catch matcher
+    // see https://github.com/philsquared/Catch/blob/master/docs/matchers.md
+    Test::checkEqual(Tf(), expectedTf);
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
