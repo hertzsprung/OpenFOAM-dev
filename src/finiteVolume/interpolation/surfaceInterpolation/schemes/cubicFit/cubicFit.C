@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2016 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2017 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,60 +23,11 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "catch.hpp"
-#include "IStringStream.H"
-#include "tmp.H"
-#include "surfaceInterpolationScheme.H"
+#include "cubicFit.H"
 
 namespace Foam
 {
-
-TEST_CASE("cubicFit_has_zero_correction_on_upwind")
-{
-	const Foam::Time runTime
-    (
-        Foam::Time::controlDictName,
-        "resources",
-        "cartesian4x3Mesh"
-    );
-
-	const Foam::fvMesh mesh
-	(
-		Foam::IOobject
-		(
-			Foam::fvMesh::defaultRegion,
-			runTime.constant(),
-			runTime,
-			Foam::IOobject::MUST_READ
-		)
-	);
-
-    const surfaceScalarField faceFlux
-    (
-		Foam::IOobject
-		(
-			"phi",
-			runTime.constant(),
-		    mesh,
-			Foam::IOobject::MUST_READ
-		),
-        mesh
-    );
-
-    IStringStream interpolationSchemeName("cubicFit");
-    const tmp<surfaceInterpolationScheme<scalar> > tCubicFit = 
-        surfaceInterpolationScheme<scalar>::New
-        (
-            mesh,
-            faceFlux,
-            interpolationSchemeName
-        );
-
-    const surfaceInterpolationScheme<scalar>& cubicFit = tCubicFit();
+    makeSurfaceInterpolationScheme(cubicFit);
 }
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace Foam
 
 // ************************************************************************* //
