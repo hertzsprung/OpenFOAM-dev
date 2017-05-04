@@ -21,48 +21,43 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    Foam::checks
-
-Description
-    A collection of assertions for use in the Catch test suite
-
-SourceFiles
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef checks_H
-#define checks_H
+#include "mesh.H"
 
-#include "GeometricField.H"
-#include "scalar.H"
+#include "surfaceFields.H"
+#include "OStringStream.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-namespace Test
+
+// * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
+
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Test::mesh::mesh(const Foam::fvMesh& mesh)
+:
+    mesh_(mesh)
+{}
+
+
+// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+Foam::label Test::mesh::indexOfFaceWithCentreAt
+(
+    const Foam::point& Cf,
+    const Foam::scalar epsilon
+) const
 {
-
-    static Approx approx = Approx::custom().epsilon(Foam::SMALL);
-
-    template<template<class> class PatchField, class GeoMesh>
-    void checkEqual
-    (
-        const Foam::GeometricField<Foam::scalar, PatchField, GeoMesh>& actual,
-        const Foam::GeometricField<Foam::scalar, PatchField, GeoMesh>& expected,
-        Approx approx = Approx::custom().epsilon(Foam::SMALL)
-    )
+    forAll(mesh_.Cf(), faceI)
     {
-        forAll(actual, faceI)
-        {
-            CHECK(actual[faceI] == approx(expected[faceI]));
-            // TODO: check boundary values?
-        }
+        if (Foam::magSqr(mesh_.Cf()[faceI] - Cf) < epsilon) return faceI;
     }
 
-} // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#endif
+	Foam::OStringStream os;
+	os << "no face with centre at " << Cf;
+	throw std::domain_error(os.str());
+}
 
 // ************************************************************************* //

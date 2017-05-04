@@ -25,11 +25,14 @@ License
 
 #include "catch.hpp"
 #include "checks.H"
+#include "mesh.H"
 #include "IStringStream.H"
 #include "tmp.H"
 #include "surfaceInterpolationScheme.H"
 
-namespace Foam
+using namespace Foam;
+
+namespace Test
 {
 
 TEST_CASE("cubicFit_interpolates_constant_scalar_field")
@@ -52,17 +55,19 @@ TEST_CASE("cubicFit_interpolates_constant_scalar_field")
 		)
 	);
 
-    const surfaceScalarField faceFlux
+    const surfaceVectorField Uf
     (
 		Foam::IOobject
 		(
-			"phi",
+			"Uf",
 			runTime.constant(),
 		    mesh,
 			Foam::IOobject::MUST_READ
 		),
         mesh
     );
+
+    const surfaceScalarField phi = Uf & mesh.Sf();
 
     const volScalarField T
     (
@@ -81,7 +86,7 @@ TEST_CASE("cubicFit_interpolates_constant_scalar_field")
         surfaceInterpolationScheme<scalar>::New
         (
             mesh,
-            faceFlux,
+            phi,
             interpolationSchemeName
         );
 
@@ -106,8 +111,78 @@ TEST_CASE("cubicFit_interpolates_constant_scalar_field")
     Test::checkEqual(Tf(), expectedTf);
 }
 
+TEST_CASE("cubicFit_exactly_reconstructs_linear_in_x")
+{
+	const Foam::Time runTime
+    (
+        Foam::Time::controlDictName,
+        "resources",
+        "cartesian4x3Mesh"
+    );
+
+	const Foam::fvMesh mesh
+	(
+		Foam::IOobject
+		(
+			Foam::fvMesh::defaultRegion,
+			runTime.constant(),
+			runTime,
+			Foam::IOobject::MUST_READ
+		)
+	);
+
+    const Test::mesh testMesh(mesh);
+
+    const surfaceVectorField Uf
+    (
+		Foam::IOobject
+		(
+			"Uf",
+			runTime.constant(),
+		    mesh,
+			Foam::IOobject::MUST_READ
+		),
+        mesh
+    );
+
+    const surfaceScalarField phi = Uf & mesh.Sf();
+
+    volScalarField T
+    (
+		Foam::IOobject
+		(
+            "T",
+            runTime.timeName(),
+            mesh
+        ),
+        mesh,
+        dimensionedScalar("T", dimless, scalar(0))
+    );
+
+    forAll(T, cellI)
+    {
+        T[cellI] = 3*mesh.C()[cellI].x() + 4;
+    }
+
+    IStringStream interpolationSchemeName("cubicFit");
+    const tmp<surfaceInterpolationScheme<scalar> > tCubicFit =
+        surfaceInterpolationScheme<scalar>::New
+        (
+            mesh,
+            phi,
+            interpolationSchemeName
+        );
+
+    const surfaceInterpolationScheme<scalar>& cubicFit = tCubicFit();
+
+    const tmp<surfaceScalarField> Tf = cubicFit.interpolate(T);
+
+    const label faceI = testMesh.indexOfFaceWithCentreAt(point(3, 1.5, 0));
+	CHECK(Tf()[faceI] == Test::approx(13.0));
+}
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace Foam
+} // End namespace Test
 
 // ************************************************************************* //

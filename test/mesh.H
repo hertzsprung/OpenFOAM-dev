@@ -22,42 +22,71 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::checks
+    Foam::testMesh
 
 Description
-    A collection of assertions for use in the Catch test suite
+    Utility methods for tests that use fvMesh instances
 
 SourceFiles
+    testMesh.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef checks_H
-#define checks_H
+#ifndef testMesh_H
+#define testMesh_H
 
-#include "GeometricField.H"
-#include "scalar.H"
+#include "fvMesh.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Test
 {
 
-    static Approx approx = Approx::custom().epsilon(Foam::SMALL);
+/*---------------------------------------------------------------------------*\
+                         Class testMesh Declaration
+\*---------------------------------------------------------------------------*/
 
-    template<template<class> class PatchField, class GeoMesh>
-    void checkEqual
-    (
-        const Foam::GeometricField<Foam::scalar, PatchField, GeoMesh>& actual,
-        const Foam::GeometricField<Foam::scalar, PatchField, GeoMesh>& expected,
-        Approx approx = Approx::custom().epsilon(Foam::SMALL)
-    )
-    {
-        forAll(actual, faceI)
-        {
-            CHECK(actual[faceI] == approx(expected[faceI]));
-            // TODO: check boundary values?
-        }
-    }
+class mesh
+{
+    // Private data
+
+        const Foam::fvMesh& mesh_;
+
+
+    // Private Member Functions
+
+        //- Disallow default bitwise copy construct
+        mesh(const mesh&);
+
+        //- Disallow default bitwise assignment
+        void operator=(const mesh&);
+
+
+public:
+
+    // Constructors
+
+        //- Construct from components
+        mesh(const Foam::fvMesh& mesh);
+
+
+    // Member Functions
+
+        // Access
+        Foam::label indexOfFaceWithCentreAt
+        (
+            const Foam::point& Cf,
+            const Foam::scalar epsilon = Foam::SMALL
+        ) const;
+        // Check
+
+        // Edit
+
+        // Write
+
+};
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
 
