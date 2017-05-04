@@ -45,7 +45,8 @@ void Foam::cubicFitPolynomial::fitTo
     scalarList& weights
 ) const
 {
-    weights.setSize(stencil.size(), scalar(0));
+    weights.setSize(stencil.size(), 1.0/stencil.size());
+    weights[0] -= 1.0;
 }
 
 
