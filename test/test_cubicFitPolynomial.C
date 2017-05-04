@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2017 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -21,42 +21,41 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    Foam::checks
-
-Description
-    A collection of assertions for use in the Catch test suite
-
-SourceFiles
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef checks_H
-#define checks_H
-
 #include "catch.hpp"
-#include "GeometricField.H"
-#include "scalar.H"
+#include "checks.H"
+
+#include "cubicFitPolynomial.H"
+#include "List.H"
+#include "point.H"
 #include "scalarList.H"
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+using namespace Foam;
 
 namespace Test
 {
 
-    static Approx approx = Approx::custom().epsilon(Foam::SMALL);
+TEST_CASE("cubicFitPolynomial_has_equal_weights_for_constant_polynomial")
+{
+    List<point> stencil(2);
+    stencil[0] = point(-1, 0, 0);
+    stencil[1] = point(1, 0, 0);
 
-    void checkEqual
-    (
-        const Foam::scalarList& actual,
-        const Foam::scalarList& expected,
-        Approx approx = Approx::custom().epsilon(Foam::SMALL)
-    );
+    scalarList actualWeights;
 
-} // End namespace Foam
+    const cubicFitPolynomial polynomial;
+    polynomial.fitTo(stencil, actualWeights);
+
+    scalarList expectedWeights(2);
+    expectedWeights[0] = -0.5;
+    expectedWeights[1] = 0.5;
+
+    checkEqual(actualWeights, expectedWeights);
+}
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#endif
+} // End namespace Test
 
 // ************************************************************************* //

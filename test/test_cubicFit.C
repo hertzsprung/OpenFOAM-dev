@@ -111,7 +111,7 @@ TEST_CASE("cubicFit_interpolates_constant_scalar_field")
     Test::checkEqual(Tf(), expectedTf);
 }
 
-TEST_CASE("cubicFit_exactly_reconstructs_linear_in_x")
+TEST_CASE("cubicFit_averages_stencil_values")
 {
 	const Foam::Time runTime
     (
@@ -178,7 +178,7 @@ TEST_CASE("cubicFit_exactly_reconstructs_linear_in_x")
     const tmp<surfaceScalarField> Tf = cubicFit.interpolate(T);
 
     const label faceI = testMesh.indexOfFaceWithCentreAt(point(3, 1.5, 0));
-	CHECK(Tf()[faceI] == Test::approx(13.0));
+	CHECK(Tf()[faceI] == Test::approx(10.0));
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

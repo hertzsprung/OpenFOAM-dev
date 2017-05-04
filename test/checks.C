@@ -21,42 +21,21 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    Foam::checks
-
-Description
-    A collection of assertions for use in the Catch test suite
-
-SourceFiles
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef checks_H
-#define checks_H
+#include "checks.H"
 
-#include "catch.hpp"
-#include "GeometricField.H"
-#include "scalar.H"
-#include "scalarList.H"
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace Test
+void Test::checkEqual
+(
+    const Foam::scalarList& actual,
+    const Foam::scalarList& expected,
+    Approx approx
+)
 {
-
-    static Approx approx = Approx::custom().epsilon(Foam::SMALL);
-
-    void checkEqual
-    (
-        const Foam::scalarList& actual,
-        const Foam::scalarList& expected,
-        Approx approx = Approx::custom().epsilon(Foam::SMALL)
-    );
-
-} // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#endif
+    forAll(actual, i)
+    {
+        CHECK(actual[i] == approx(expected[i]));
+    }
+}
 
 // ************************************************************************* //
