@@ -22,22 +22,22 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::cubicFit
+    Foam::cubicFitWeights
 
 Description
+    Generates owner and neighbour weights for a given
+    extendedUpwindCellToFaceStencil
 
 SourceFiles
-    cubicFit.C
+    cubicFitWeights.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef cubicFit_H
-#define cubicFit_H
+#ifndef cubicFitWeights_H
+#define cubicFitWeights_H
 
-#include "cubicFitWeights.H"
+#include "fvMesh.H"
 #include "extendedUpwindCellToFaceStencil.H"
-#include "upwind.H"
-#include "upwindCPCCellToFaceStencilObject.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -45,90 +45,57 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                         Class cubicFit Declaration
+                         Class cubicFitWeights Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class Type>
-class cubicFit
-:
-    public upwind<Type>
+class cubicFitWeights
 {
     // Private data
 
-        //- Controls the minimum angle and relative lengths of opposing faces
-        //- for constructing the upwind-biased stencil
-        const scalar minOpposedness_ = 0.5;
+        //- A list of stencil weights for each internal face with faceFlux
+        // from the owner side
+        List<scalarList> ownerWeights_;
+
+        //- A list of stencil weights for each internal face with faceFlux
+        // from the neighbour side
+        List<scalarList> neighbourWeights_;
 
 
     // Private Member Functions
 
         //- Disallow default bitwise copy construct
-        cubicFit(const cubicFit&);
+        cubicFitWeights(const cubicFitWeights&);
 
         //- Disallow default bitwise assignment
-        void operator=(const cubicFit&);
+        void operator=(const cubicFitWeights&);
 
 
 public:
 
-    //- Runtime type information
-    TypeName("cubicFit");
-
-
     // Constructors
 
-        cubicFit(const fvMesh& mesh, Istream& is)
-        :
-            upwind<Type>
-            (
-                mesh,
-                mesh.lookupObject<surfaceScalarField>(word(is))
-            )
-        {}
-
-        cubicFit
+        cubicFitWeights
         (
             const fvMesh& mesh,
-            const surfaceScalarField& faceFlux,
-            Istream& is
-        )
-        :
-            upwind<Type>(mesh, faceFlux)
-        {}
+            const extendedUpwindCellToFaceStencil& stencil
+        );
 
 
     // Member Functions
-        //- Return true if this scheme uses an explicit correction
-        virtual bool corrected() const
+
+        const List<scalarList>& owner() const
         {
-            return true;
+            return ownerWeights_;
         }
 
-        //- Return the explicit correction to the face-interpolate
-        virtual tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
-        correction
-        (
-            const GeometricField<Type, fvPatchField, volMesh>& vf
-        ) const
+        const List<scalarList>& neighbour() const
         {
-            const fvMesh& mesh = this->mesh();
-
-            const extendedUpwindCellToFaceStencil& stencil = upwindCPCCellToFaceStencilObject::New
-            (
-                mesh,
-                false, // not pure upwind
-                minOpposedness_
-            );
-
-            const cubicFitWeights weights(mesh, stencil);
-
-            return stencil.weightedSum(
-                upwind<Type>::faceFlux_,
-                vf,
-                weights.owner(),
-                weights.neighbour()
-            );
+            return neighbourWeights_;
         }
+
+        // Check
+        // Edit
+        // Write
 
 };
 

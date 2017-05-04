@@ -298,6 +298,8 @@ $(schemes)/linearUpwind/linearUpwind.C
 $(schemes)/linearUpwind/linearUpwindV.C
 $(schemes)/LUST/LUST.C
 $(schemes)/cubicFit/cubicFit.C
+$(schemes)/cubicFit/cubicFitWeights.C
+$(schemes)/cubicFit/cubicFitPolynomial.C
 
 limitedSchemes = $(surfaceInterpolation)/limitedSchemes
 $(limitedSchemes)/limitedSurfaceInterpolationScheme/limitedSurfaceInterpolationSchemes.C
