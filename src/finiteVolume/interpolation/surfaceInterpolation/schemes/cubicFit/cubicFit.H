@@ -34,22 +34,14 @@ SourceFiles
 #ifndef cubicFit_H
 #define cubicFit_H
 
+#include "extendedUpwindCellToFaceStencil.H"
 #include "upwind.H"
+#include "upwindCPCCellToFaceStencilObject.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-// Forward declaration of classes
-//class Istream;
-//class Ostream;
-
-// Forward declaration of friend functions and operators
-//class cubicFit;
-//Istream& operator>>(Istream&, cubicFit&);
-//Ostream& operator<<(Ostream&, const cubicFit&);
-
 
 /*---------------------------------------------------------------------------*\
                          Class cubicFit Declaration
@@ -62,8 +54,12 @@ class cubicFit
 {
     // Private data
 
-        //- Description of data_
-//        dataType data_;
+        //- Determines the upwind direction and resultant upwind-biased stencil
+        const surfaceScalarField& faceFlux_;
+
+        //- Controls the minimum angle and relative lengths of opposing faces
+        //- for constructing the upwind-biased stencil
+        const scalar minOpposedness_ = 0.5;
 
 
     // Private Member Functions
@@ -89,7 +85,8 @@ public:
             (
                 mesh,
                 mesh.lookupObject<surfaceScalarField>(word(is))
-            )
+            ),
+            faceFlux_(upwind<Type>::faceFlux_)
         {}
 
         cubicFit
@@ -99,7 +96,8 @@ public:
             Istream& is
         )
         :
-            upwind<Type>(mesh, faceFlux)
+            upwind<Type>(mesh, faceFlux),
+            faceFlux_(faceFlux)
         {}
 
 
@@ -118,30 +116,35 @@ public:
         ) const
         {
             const fvMesh& mesh = this->mesh();
-            tmp<GeometricField<Type, fvsPatchField, surfaceMesh>> tsfCorr
+
+            const extendedUpwindCellToFaceStencil& stencil = upwindCPCCellToFaceStencilObject::New
             (
-                new GeometricField<Type, fvsPatchField, surfaceMesh>
-                (
-                    IOobject
-                    (
-                        vf.name(),
-                        mesh.time().timeName(),
-                        mesh,
-                        IOobject::NO_READ,
-                        IOobject::NO_WRITE,
-                        false
-                    ),
-                    mesh,
-                    dimensioned<Type>
-                    (
-                        vf.name(),
-                        vf.dimensions(),
-                        Zero
-                    )
-                )
+                mesh,
+                false, // not pure upwind
+                minOpposedness_
             );
 
-            return tsfCorr;
+            List<scalarList> ownerWeights(mesh.nFaces());
+            List<scalarList> neighbourWeights(mesh.nFaces());
+
+            forAll(ownerWeights, faceI)
+            {
+                const label size = stencil.ownStencil()[faceI].size();
+                ownerWeights[faceI].setSize(size, scalar(0));
+            }
+
+            forAll(neighbourWeights, faceI)
+            {
+                const label size = stencil.neiStencil()[faceI].size();
+                neighbourWeights[faceI].setSize(size, scalar(0));
+            }
+
+            return stencil.weightedSum(
+                faceFlux_,
+                vf,
+                ownerWeights,
+                neighbourWeights
+            );
         }
 
         // Access
