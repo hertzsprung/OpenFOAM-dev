@@ -2,6 +2,7 @@ checks.C
 testOpenFOAM.C
 test_cubicFit.C
 test_cubicFitPolynomial.C
+test_cubicFitStencil.C
 mesh.C
 
 EXE = $(FOAM_USER_APPBIN)/testOpenFOAM

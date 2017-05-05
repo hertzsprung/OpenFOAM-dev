@@ -37,32 +37,32 @@ namespace Test
 
 TEST_CASE("cubicFit_interpolates_constant_scalar_field")
 {
-	const Foam::Time runTime
+	const Time runTime
     (
-        Foam::Time::controlDictName,
+        Time::controlDictName,
         "resources",
         "cartesian4x3Mesh"
     );
 
-	const Foam::fvMesh mesh
+	const fvMesh mesh
 	(
-		Foam::IOobject
+		IOobject
 		(
-			Foam::fvMesh::defaultRegion,
+			fvMesh::defaultRegion,
 			runTime.constant(),
 			runTime,
-			Foam::IOobject::MUST_READ
+			IOobject::MUST_READ
 		)
 	);
 
     const surfaceVectorField Uf
     (
-		Foam::IOobject
+		IOobject
 		(
 			"Uf",
 			runTime.constant(),
 		    mesh,
-			Foam::IOobject::MUST_READ
+			IOobject::MUST_READ
 		),
         mesh
     );
@@ -71,7 +71,7 @@ TEST_CASE("cubicFit_interpolates_constant_scalar_field")
 
     const volScalarField T
     (
-		Foam::IOobject
+		IOobject
 		(
             "T",
             runTime.timeName(),
@@ -96,7 +96,7 @@ TEST_CASE("cubicFit_interpolates_constant_scalar_field")
 
     const surfaceScalarField expectedTf
     (
-		Foam::IOobject
+		IOobject
 		(
             "expectedTf",
             runTime.timeName(),
@@ -111,23 +111,23 @@ TEST_CASE("cubicFit_interpolates_constant_scalar_field")
     Test::checkEqual(Tf(), expectedTf);
 }
 
-TEST_CASE("cubicFit_averages_stencil_values")
+TEST_CASE("cubicFit_exactly_reconstructs_linear_in_x")
 {
-	const Foam::Time runTime
+	const Time runTime
     (
-        Foam::Time::controlDictName,
+        Time::controlDictName,
         "resources",
         "cartesian4x3Mesh"
     );
 
-	const Foam::fvMesh mesh
+	const fvMesh mesh
 	(
-		Foam::IOobject
+		IOobject
 		(
-			Foam::fvMesh::defaultRegion,
+			fvMesh::defaultRegion,
 			runTime.constant(),
 			runTime,
-			Foam::IOobject::MUST_READ
+			IOobject::MUST_READ
 		)
 	);
 
@@ -135,12 +135,12 @@ TEST_CASE("cubicFit_averages_stencil_values")
 
     const surfaceVectorField Uf
     (
-		Foam::IOobject
+		IOobject
 		(
 			"Uf",
 			runTime.constant(),
 		    mesh,
-			Foam::IOobject::MUST_READ
+			IOobject::MUST_READ
 		),
         mesh
     );
@@ -149,7 +149,7 @@ TEST_CASE("cubicFit_averages_stencil_values")
 
     volScalarField T
     (
-		Foam::IOobject
+		IOobject
 		(
             "T",
             runTime.timeName(),
@@ -178,7 +178,7 @@ TEST_CASE("cubicFit_averages_stencil_values")
     const tmp<surfaceScalarField> Tf = cubicFit.interpolate(T);
 
     const label faceI = testMesh.indexOfFaceWithCentreAt(point(3, 1.5, 0));
-	CHECK(Tf()[faceI] == Test::approx(10.0));
+	CHECK(Tf()[faceI] == Test::approx(13.0));
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
