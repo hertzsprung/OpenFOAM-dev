@@ -35,13 +35,31 @@ License
 
 Foam::cubicFitBasis::cubicFitBasis
 (
-    const vector& i,
-    const vector& j,
-    const vector& k
+    const Foam::vector& i,
+    const Foam::vector& j,
+    const Foam::vector& k
 )
+:
+i_(i),
+j_(j),
+k_(k)
 {}
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
+const Foam::vector& Foam::cubicFitBasis::i() const
+{
+    return i_;
+}
+
+const Foam::vector& Foam::cubicFitBasis::j() const
+{
+    return j_;
+}
+
+const Foam::vector& Foam::cubicFitBasis::k() const
+{
+    return k_;
+}
 
 // ************************************************************************* //

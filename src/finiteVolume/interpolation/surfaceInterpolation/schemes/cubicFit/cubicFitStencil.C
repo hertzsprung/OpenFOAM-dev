@@ -27,9 +27,16 @@ License
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-
-// * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
-
+void Foam::cubicFitStencil::transform
+(
+    const cubicFitBasis& basis,
+    point& p
+)
+{
+    p.x() = (p - origin_) & basis.i();
+    p.y() = (p - origin_) & basis.j();
+    p.z() = (p - origin_) & basis.k();
+}
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -47,8 +54,16 @@ points_(points)
 
 void Foam::cubicFitStencil::transform(const cubicFitBasis& basis)
 {
-    points_[0] = point(-1, 0, 0);
-    points_[1] = point(1.0/3.0, 0, 0);
+    point transformedUpwindPoint = points_[0];
+    transform(basis, transformedUpwindPoint);
+
+    const scalar scale = cmptMax(cmptMag(transformedUpwindPoint));
+
+    forAll(points_, i)
+    {
+        transform(basis, points_[i]);
+        points_[i] /= scale;
+    }
 }
 
 const Foam::point& Foam::cubicFitStencil::operator[](int i) const

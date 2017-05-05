@@ -51,8 +51,9 @@ class cubicFitBasis
 {
     // Private data
 
-        //- Description of data_
-//        dataType data_;
+        vector i_;
+        vector j_;
+        vector k_;
 
 
     // Private Member Functions
@@ -78,14 +79,9 @@ public:
 
     // Member Functions
 
-        // Access
-
-        // Check
-
-        // Edit
-
-        // Write
-
+        const vector& i() const;
+        const vector& j() const;
+        const vector& k() const;
 };
 
 

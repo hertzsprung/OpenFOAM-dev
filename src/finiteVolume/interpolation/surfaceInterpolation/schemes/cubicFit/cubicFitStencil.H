@@ -61,6 +61,12 @@ class cubicFitStencil
 
     // Private Member Functions
 
+        void transform
+        (
+            const cubicFitBasis& basis,
+            point& p
+        );
+
         //- Disallow default bitwise copy construct
         cubicFitStencil(const cubicFitStencil&);
 

@@ -49,14 +49,42 @@ TEST_CASE("cubicFitStencil_translates_and_rescales")
     points[0] = point(5, 0, 0);
     points[1] = point(9, 0, 0);
 
-    cubicFitStencil actualStencil(origin, points);
-    actualStencil.transform(basis);
-
     List<point> expectedTransformedPoints(2);
     expectedTransformedPoints[0] = point(-1, 0, 0);
     expectedTransformedPoints[1] = point(1.0/3.0, 0, 0);
 
     const cubicFitStencil expectedTransformedStencil(point(0, 0, 0), expectedTransformedPoints);
+
+    cubicFitStencil actualStencil(origin, points);
+    actualStencil.transform(basis);
+
+    CHECK(actualStencil[0].x() == approx(expectedTransformedStencil[0].x()));
+    CHECK(actualStencil[1].x() == approx(expectedTransformedStencil[1].x()));
+}
+
+TEST_CASE("cubicFitStencil_translates_rescales_and_rotates_90_degrees")
+{
+    const cubicFitBasis basis
+    (
+        vector(0, 1, 0),
+        vector(-1, 0, 0),
+        vector(0, 0, 1)
+    );
+
+    const point origin(0, 4, 0);
+
+    List<point> points(2);
+    points[0] = point(0, 2, 0);
+    points[1] = point(0, 5, 0);
+
+    List<point> expectedTransformedPoints(2);
+    expectedTransformedPoints[0] = point(-1, 0, 0);
+    expectedTransformedPoints[1] = point(0.5, 0, 0);
+
+    const cubicFitStencil expectedTransformedStencil(point(0, 0, 0), expectedTransformedPoints);
+
+    cubicFitStencil actualStencil(origin, points);
+    actualStencil.transform(basis);
 
     CHECK(actualStencil[0].x() == approx(expectedTransformedStencil[0].x()));
     CHECK(actualStencil[1].x() == approx(expectedTransformedStencil[1].x()));
