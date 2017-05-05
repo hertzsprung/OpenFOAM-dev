@@ -29,9 +29,29 @@ License
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
+void Foam::cubicFitWeights::fit
+(
+    const List<List<point>>& stencilGeometries,
+    List<scalarList>& weights
+)
+{
+    for (label faceI = 0; faceI < mesh_.nInternalFaces(); faceI++)
+    {
+        const cubicFitPolynomial polynomial;
+        cubicFitStencil stencil(mesh_.Cf()[faceI], stencilGeometries[faceI]);
+        const cubicFitBasis basis
+        (
+            vector(1, 0, 0),
+            vector(0, 1, 0),
+            vector(0, 0, 1)
+        );
+        stencil.transform(basis);
 
-// * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
+        polynomial.fitTo(stencil, weights[faceI]);
+    }
 
+    // TODO: calculate weights for faces on coupled boundaries
+}
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -41,6 +61,7 @@ Foam::cubicFitWeights::cubicFitWeights
     const extendedUpwindCellToFaceStencil& stencil
 )
 :
+mesh_(mesh),
 ownerWeights_(mesh.nFaces()),
 neighbourWeights_(mesh.nFaces())
 {
@@ -53,16 +74,7 @@ neighbourWeights_(mesh.nFaces())
         mesh.C(),
         stencilGeometries
     );
-
-    for (label faceI = 0; faceI < mesh.nInternalFaces(); faceI++)
-    {
-        const cubicFitPolynomial polynomial;
-        const cubicFitStencil stencil(mesh.Cf()[faceI], stencilGeometries[faceI]);
-
-        polynomial.fitTo(stencil, ownerWeights_[faceI]);
-    }
-
-    // TODO: calculate weights for faces on coupled boundaries
+    fit(stencilGeometries, ownerWeights_);
 
     stencil.collectData
     (
@@ -71,16 +83,7 @@ neighbourWeights_(mesh.nFaces())
         mesh.C(),
         stencilGeometries
     );
-
-    for (label faceI = 0; faceI < mesh.nInternalFaces(); faceI++)
-    {
-        const cubicFitPolynomial polynomial;
-        const cubicFitStencil stencil(mesh.Cf()[faceI], stencilGeometries[faceI]);
-
-        polynomial.fitTo(stencil, neighbourWeights_[faceI]);
-    }
-
-    // TODO: calculate weights for faces on coupled boundaries
+    fit(stencilGeometries, neighbourWeights_);
 }
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //

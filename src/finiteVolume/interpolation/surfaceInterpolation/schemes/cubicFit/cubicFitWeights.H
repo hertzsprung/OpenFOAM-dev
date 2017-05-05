@@ -52,6 +52,8 @@ class cubicFitWeights
 {
     // Private data
 
+        const fvMesh& mesh_;
+
         //- A list of stencil weights for each internal face with faceFlux
         // from the owner side
         List<scalarList> ownerWeights_;
@@ -62,6 +64,12 @@ class cubicFitWeights
 
 
     // Private Member Functions
+
+        void fit
+        (
+            const List<List<point>>& stencilGeometries,
+            List<scalarList>& weights
+        );
 
         //- Disallow default bitwise copy construct
         cubicFitWeights(const cubicFitWeights&);
@@ -92,10 +100,6 @@ public:
         {
             return neighbourWeights_;
         }
-
-        // Check
-        // Edit
-        // Write
 
 };
 

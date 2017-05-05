@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "cubicFitPolynomial.H"
+#include "SVD.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
@@ -41,11 +42,28 @@ Foam::cubicFitPolynomial::cubicFitPolynomial()
 
 void Foam::cubicFitPolynomial::fitTo
 (
-    const Foam::cubicFitStencil& stencil,
-    Foam::scalarList& weights
+    const cubicFitStencil& stencil,
+    scalarList& weights
 ) const
 {
-    weights.setSize(stencil.size(), 1.0/stencil.size());
+    weights.setSize(stencil.size());
+
+    scalarRectangularMatrix B(stencil.size(), 2);
+
+    forAll(stencil, stencilI)
+    {
+        B(stencilI, 0) = 1;
+        B(stencilI, 1) = stencil[stencilI].x();
+    }
+
+    const SVD svd(B);
+    const scalarRectangularMatrix& Binv = svd.VSinvUt();
+
+    forAll(stencil, stencilI)
+    {
+        weights[stencilI] = Binv(0, stencilI);
+    }
+
     weights[0] -= 1.0;
 }
 
