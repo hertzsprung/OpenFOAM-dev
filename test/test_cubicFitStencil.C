@@ -25,6 +25,7 @@ License
 
 #include "catch.hpp"
 #include "checks.H"
+#include "stencilOrientation.H"
 
 #include "cubicFitBasis.H"
 #include "cubicFitStencil.H"
@@ -37,6 +38,13 @@ namespace Test
 TEST_CASE("cubicFitStencil_translates_and_rescales")
 {
     const cubicFitBasis basis
+    (
+        vector(1, 0, 0),
+        vector(0, 1, 0),
+        vector(0, 0, 1)
+    );
+
+    const Test::stencilOrientation orientation
     (
         vector(1, 0, 0),
         vector(0, 1, 0),
@@ -56,7 +64,7 @@ TEST_CASE("cubicFitStencil_translates_and_rescales")
     const cubicFitStencil expectedTransformedStencil(point(0, 0, 0), expectedTransformedPoints);
 
     cubicFitStencil actualStencil(origin, points);
-    actualStencil.transform(basis);
+    actualStencil.transform(basis/*orientation*/);
 
     CHECK(actualStencil[0].x() == approx(expectedTransformedStencil[0].x()));
     CHECK(actualStencil[1].x() == approx(expectedTransformedStencil[1].x()));

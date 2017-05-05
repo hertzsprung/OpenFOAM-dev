@@ -22,23 +22,20 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Test::interpolation
+    Test::stencilOrientation
 
 Description
-    Convenient test setup for testing the cubicFit surfaceInterpolationScheme
 
 SourceFiles
-    interpolation.C
+    stencilOrientation.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef interpolation_H
-#define interpolation_H
+#ifndef stencilOrientation_H
+#define stencilOrientation_H
 
-#include "scalar.H"
-#include "surfaceInterpolationScheme.H"
-#include "fileName.H"
-#include "IStringStream.H"
+#include "cubicFitStencilOrientation.H"
+#include "vector.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -46,59 +43,53 @@ namespace Test
 {
 
 /*---------------------------------------------------------------------------*\
-                         Class interpolation Declaration
+                         Class stencilOrientation Declaration
 \*---------------------------------------------------------------------------*/
 
-class interpolation
+class stencilOrientation
+:
+    public Foam::cubicFitStencilOrientation
 {
-    // Private data
-
-        const Foam::Time runTime_;
-        const Foam::fvMesh mesh_;
-        const Foam::tmp<Foam::surfaceScalarField> phi_;
-        const Foam::tmp
-        <
-            Foam::surfaceInterpolationScheme<Foam::scalar>
-        >
-        scheme_;
-        Foam::volScalarField T_;
 
     // Private Member Functions
 
-        const Foam::tmp<Foam::surfaceScalarField> initialisePhi();
-
-        const Foam::tmp
-        <
-            Foam::surfaceInterpolationScheme<Foam::scalar>
-        >
-        initialiseScheme(const Foam::word& schemeName);
-
-
         //- Disallow default bitwise copy construct
-        interpolation(const interpolation&);
+        stencilOrientation(const stencilOrientation&);
 
         //- Disallow default bitwise assignment
-        void operator=(const interpolation&);
+        void operator=(const stencilOrientation&);
 
 
 public:
 
     // Constructors
 
-        interpolation
+        stencilOrientation
         (
-            const Foam::fileName& caseName,
-            const Foam::word& schemeName = "cubicFit"
+            const Foam::vector& i,
+            const Foam::vector& j,
+            const Foam::vector& k
         );
 
+    //- Destructor
+        virtual ~stencilOrientation() {};
+
     // Member Functions
+        virtual void orient                                                             (
+            const Foam::cubicFitStencil& stencil,
+            Foam::cubicFitBasis& basis
+        ) const;
 
-        const Foam::Time& runTime() const;
-        const Foam::fvMesh& mesh() const;
-        Foam::volScalarField& T();
-        const Foam::tmp<Foam::surfaceScalarField> interpolateT() const;
 
+        // Access
+
+        // Check
+
+        // Edit
+
+        // Write
 };
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
