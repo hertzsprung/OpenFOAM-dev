@@ -26,6 +26,9 @@ License
 #include "catch.hpp"
 #include "checks.H"
 #include "mesh.H"
+#include "interpolation.H"
+
+#include "IOobject.H"
 #include "IStringStream.H"
 #include "tmp.H"
 #include "surfaceInterpolationScheme.H"
@@ -37,148 +40,53 @@ namespace Test
 
 TEST_CASE("cubicFit_interpolates_constant_scalar_field")
 {
-	const Time runTime
-    (
-        Time::controlDictName,
-        "resources",
-        "cartesian4x3Mesh"
-    );
-
-	const fvMesh mesh
-	(
-		IOobject
-		(
-			fvMesh::defaultRegion,
-			runTime.constant(),
-			runTime,
-			IOobject::MUST_READ
-		)
-	);
-
-    const surfaceVectorField Uf
-    (
-		IOobject
-		(
-			"Uf",
-			runTime.constant(),
-		    mesh,
-			IOobject::MUST_READ
-		),
-        mesh
-    );
-
-    const surfaceScalarField phi = Uf & mesh.Sf();
-
-    const volScalarField T
-    (
-		IOobject
-		(
-            "T",
-            runTime.timeName(),
-            mesh
-        ),
-        mesh,
-        dimensionedScalar("T", dimless, scalar(1))
-    );
-
-    IStringStream interpolationSchemeName("cubicFit");
-    const tmp<surfaceInterpolationScheme<scalar> > tCubicFit = 
-        surfaceInterpolationScheme<scalar>::New
-        (
-            mesh,
-            phi,
-            interpolationSchemeName
-        );
-
-    const surfaceInterpolationScheme<scalar>& cubicFit = tCubicFit();
-
-    const tmp<surfaceScalarField> Tf = cubicFit.interpolate(T);
-
+    Test::interpolation cubicFit("cartesian4x3Mesh");
+    cubicFit.T() = dimensionedScalar("T", dimless, scalar(1));
     const surfaceScalarField expectedTf
     (
-		IOobject
-		(
+        IOobject
+        (
             "expectedTf",
-            runTime.timeName(),
-            mesh
+            cubicFit.runTime().timeName(),
+            cubicFit.mesh()
         ),
-        mesh,
+        cubicFit.mesh(),
         dimensionedScalar("expectedTf", dimless, scalar(1))
     );
 
-    // TODO replace checkEqual with a Catch matcher
-    // see https://github.com/philsquared/Catch/blob/master/docs/matchers.md
-    Test::checkEqual(Tf(), expectedTf);
+    const tmp<surfaceScalarField> Tf = cubicFit.interpolateT();
+
+    Test::checkEqual(Tf, expectedTf);
 }
 
-TEST_CASE("cubicFit_exactly_reconstructs_linear_in_x")
+TEST_CASE("cubicFit_exactly_reconstructs_linear_in_x_for_vertical_face")
 {
-	const Time runTime
-    (
-        Time::controlDictName,
-        "resources",
-        "cartesian4x3Mesh"
-    );
-
-	const fvMesh mesh
-	(
-		IOobject
-		(
-			fvMesh::defaultRegion,
-			runTime.constant(),
-			runTime,
-			IOobject::MUST_READ
-		)
-	);
-
-    const Test::mesh testMesh(mesh);
-
-    const surfaceVectorField Uf
-    (
-		IOobject
-		(
-			"Uf",
-			runTime.constant(),
-		    mesh,
-			IOobject::MUST_READ
-		),
-        mesh
-    );
-
-    const surfaceScalarField phi = Uf & mesh.Sf();
-
-    volScalarField T
-    (
-		IOobject
-		(
-            "T",
-            runTime.timeName(),
-            mesh
-        ),
-        mesh,
-        dimensionedScalar("T", dimless, scalar(0))
-    );
-
-    forAll(T, cellI)
+    Test::interpolation cubicFit("cartesian4x3Mesh");
+    const Test::mesh testMesh(cubicFit.mesh());
+    forAll(cubicFit.T(), cellI)
     {
-        T[cellI] = 3*mesh.C()[cellI].x() + 4;
+        cubicFit.T()[cellI] = 3*cubicFit.mesh().C()[cellI].x() + 4;
     }
 
-    IStringStream interpolationSchemeName("cubicFit");
-    const tmp<surfaceInterpolationScheme<scalar> > tCubicFit =
-        surfaceInterpolationScheme<scalar>::New
-        (
-            mesh,
-            phi,
-            interpolationSchemeName
-        );
-
-    const surfaceInterpolationScheme<scalar>& cubicFit = tCubicFit();
-
-    const tmp<surfaceScalarField> Tf = cubicFit.interpolate(T);
+    const tmp<surfaceScalarField> Tf = cubicFit.interpolateT();
 
     const label faceI = testMesh.indexOfFaceWithCentreAt(point(3, 1.5, 0));
-	CHECK(Tf()[faceI] == Test::approx(13.0));
+    CHECK(Tf()[faceI] == Test::approx(13.0));
+}
+
+TEST_CASE("cubicFit_exactly_reconstructs_linear_in_x_for_horizontal_face")
+{
+    Test::interpolation cubicFit("cartesian3x4Mesh");
+    const Test::mesh testMesh(cubicFit.mesh());
+    forAll(cubicFit.T(), cellI)
+    {
+        cubicFit.T()[cellI] = 3*cubicFit.mesh().C()[cellI].y() + 4;
+    }
+
+    const tmp<surfaceScalarField> Tf = cubicFit.interpolateT();
+
+    const label faceI = testMesh.indexOfFaceWithCentreAt(point(1.5, 3, 0));
+    CHECK(Tf()[faceI] == Test::approx(13.0));
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

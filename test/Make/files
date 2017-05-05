@@ -1,4 +1,5 @@
 checks.C
+interpolation.C
 testOpenFOAM.C
 test_cubicFit.C
 test_cubicFitPolynomial.C
