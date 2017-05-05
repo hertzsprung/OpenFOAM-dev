@@ -63,7 +63,7 @@ Foam::extendedUpwindCellToFaceStencil::weightedSum
             (
                 fld.name(),
                 fld.dimensions(),
-                Zero
+                pTraits<Type>::zero
             )
         )
     );
@@ -72,7 +72,7 @@ Foam::extendedUpwindCellToFaceStencil::weightedSum
     // Internal faces
     for (label facei = 0; facei < mesh.nInternalFaces(); facei++)
     {
-        if (phi[facei] > 0)
+        if (phi[facei] >= 0)
         {
             // Flux out of owner. Use upwind (= owner side) stencil.
             const List<Type>& stField = ownFld[facei];
