@@ -52,6 +52,11 @@ points_(points)
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
+Foam::label Foam::cubicFitStencil::size() const
+{
+    return points_.size();
+}
+
 void Foam::cubicFitStencil::transform(const cubicFitBasis& basis)
 {
     point transformedUpwindPoint = points_[0];

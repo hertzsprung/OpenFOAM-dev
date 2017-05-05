@@ -27,6 +27,7 @@ License
 #include "checks.H"
 
 #include "cubicFitPolynomial.H"
+#include "cubicFitStencil.H"
 #include "List.H"
 #include "point.H"
 #include "scalarList.H"
@@ -38,9 +39,11 @@ namespace Test
 
 TEST_CASE("cubicFitPolynomial_has_equal_weights_for_constant_polynomial")
 {
-    List<point> stencil(2);
-    stencil[0] = point(-1, 0, 0);
-    stencil[1] = point(1, 0, 0);
+    List<point> stencilPoints(2);
+    stencilPoints[0] = point(-1, 0, 0);
+    stencilPoints[1] = point(1, 0, 0);
+
+    const cubicFitStencil stencil(point(0, 0, 0), stencilPoints);
 
     scalarList actualWeights;
 

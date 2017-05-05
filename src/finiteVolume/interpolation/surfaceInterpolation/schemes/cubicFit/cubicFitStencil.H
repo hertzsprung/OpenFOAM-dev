@@ -88,12 +88,10 @@ public:
 
     // Member Functions
 
+        label size() const;
+
         void transform(const cubicFitBasis& basis);
 
-        // Access
-        // Check
-        // Edit
-        // Write
 
     // Member Operators
 

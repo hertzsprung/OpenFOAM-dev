@@ -57,7 +57,9 @@ neighbourWeights_(mesh.nFaces())
     for (label faceI = 0; faceI < mesh.nInternalFaces(); faceI++)
     {
         const cubicFitPolynomial polynomial;
-        polynomial.fitTo(stencilGeometries[faceI], ownerWeights_[faceI]);
+        const cubicFitStencil stencil(mesh.Cf()[faceI], stencilGeometries[faceI]);
+
+        polynomial.fitTo(stencil, ownerWeights_[faceI]);
     }
 
     // TODO: calculate weights for faces on coupled boundaries
@@ -73,7 +75,9 @@ neighbourWeights_(mesh.nFaces())
     for (label faceI = 0; faceI < mesh.nInternalFaces(); faceI++)
     {
         const cubicFitPolynomial polynomial;
-        polynomial.fitTo(stencilGeometries[faceI], neighbourWeights_[faceI]);
+        const cubicFitStencil stencil(mesh.Cf()[faceI], stencilGeometries[faceI]);
+
+        polynomial.fitTo(stencil, neighbourWeights_[faceI]);
     }
 
     // TODO: calculate weights for faces on coupled boundaries

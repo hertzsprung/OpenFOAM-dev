@@ -34,6 +34,7 @@ SourceFiles
 #ifndef cubicFitPolynomial_H
 #define cubicFitPolynomial_H
 
+#include "cubicFitStencil.H"
 #include "List.H"
 #include "point.H"
 #include "scalarList.H"
@@ -70,19 +71,13 @@ public:
 
         cubicFitPolynomial();
 
-
     // Member Functions
 
         void fitTo
         (
-            const List<point>& stencil,
+            const cubicFitStencil& stencil,
             scalarList& weights
         ) const;
-
-        // Access
-        // Check
-        // Edit
-        // Write
 
 };
 
