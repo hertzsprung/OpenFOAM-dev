@@ -20,12 +20,12 @@ internalField   uniform (1 0 0);
 
 boundaryField
 {
-    ground
+    front
     {
         type            fixedValue;
         value           uniform (1 0 0);
     }
-    top
+    back
     {
         type            fixedValue;
         value           uniform (1 0 0);
