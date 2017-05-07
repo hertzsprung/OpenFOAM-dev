@@ -38,6 +38,7 @@ SourceFiles
 
 #include "fvMesh.H"
 #include "extendedUpwindCellToFaceStencil.H"
+#include "cubicFitStencilOrientation.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -53,6 +54,8 @@ class cubicFitWeights
     // Private data
 
         const fvMesh& mesh_;
+
+        const cubicFitStencilOrientation& orientation_;
 
         //- A list of stencil weights for each internal face with faceFlux
         // from the owner side
@@ -85,6 +88,7 @@ public:
         cubicFitWeights
         (
             const fvMesh& mesh,
+            const cubicFitStencilOrientation& orientation,
             const extendedUpwindCellToFaceStencil& stencil
         );
 

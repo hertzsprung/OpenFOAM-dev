@@ -34,6 +34,7 @@ SourceFiles
 #ifndef cubicFit_H
 #define cubicFit_H
 
+#include "cartesian2dStencilOrientation.H"
 #include "cubicFitWeights.H"
 #include "extendedUpwindCellToFaceStencil.H"
 #include "upwind.H"
@@ -120,7 +121,8 @@ public:
                 minOpposedness_
             );
 
-            const cubicFitWeights weights(mesh, stencil);
+            const cartesian2dStencilOrientation orientation;
+            const cubicFitWeights weights(mesh, orientation, stencil);
 
             return stencil.weightedSum(
                 upwind<Type>::faceFlux_,

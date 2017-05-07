@@ -33,6 +33,13 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
+Foam::cubicFitBasis::cubicFitBasis()
+:
+i_(1, 0, 0),
+j_(0, 1, 0),
+k_(0, 0, 1)
+{}
+
 Foam::cubicFitBasis::cubicFitBasis
 (
     const Foam::vector& i,
@@ -58,6 +65,21 @@ const Foam::vector& Foam::cubicFitBasis::j() const
 }
 
 const Foam::vector& Foam::cubicFitBasis::k() const
+{
+    return k_;
+}
+
+Foam::vector& Foam::cubicFitBasis::i()
+{
+    return i_;
+}
+
+Foam::vector& Foam::cubicFitBasis::j()
+{
+    return j_;
+}
+
+Foam::vector& Foam::cubicFitBasis::k()
 {
     return k_;
 }

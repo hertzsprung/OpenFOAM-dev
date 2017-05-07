@@ -67,6 +67,10 @@ class cubicFitBasis
 
 public:
 
+        //- Construct a default basis with i/j/k unit vectors aligned with
+        // the Cartesian coordinate system of the mesh
+        cubicFitBasis();
+
         //- Construct a basis from specified vectors.
         // The user must ensure the vectors are orthogonal.
         cubicFitBasis
@@ -82,6 +86,10 @@ public:
         const vector& i() const;
         const vector& j() const;
         const vector& k() const;
+
+        vector& i();
+        vector& j();
+        vector& k();
 };
 
 

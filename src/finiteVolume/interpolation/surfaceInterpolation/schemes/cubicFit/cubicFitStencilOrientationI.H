@@ -23,63 +23,14 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "cubicFitStencil.H"
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-void Foam::cubicFitStencil::transform
-(
-    const cubicFitBasis& basis,
-    point& p
-)
-{
-    p.x() = (p - origin_) & basis.i();
-    p.y() = (p - origin_) & basis.j();
-    p.z() = (p - origin_) & basis.k();
-}
-
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
-
-Foam::cubicFitStencil::cubicFitStencil
-(
-    const Foam::point& origin,
-    const Foam::List<point>& points
-)
-:
-origin_(origin),
-points_(points)
+inline Foam::cubicFitStencilOrientation::~cubicFitStencilOrientation()
 {}
 
-// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-Foam::label Foam::cubicFitStencil::size() const
-{
-    return points_.size();
-}
-
-void Foam::cubicFitStencil::transform
-(
-    const cubicFitStencilOrientation& orientation
-)
-{
-    cubicFitBasis basis;
-    orientation.orient(*this, basis);
-
-    point transformedUpwindPoint = points_[0];
-    transform(basis, transformedUpwindPoint);
-
-    const scalar scale = cmptMax(cmptMag(transformedUpwindPoint));
-
-    forAll(points_, i)
-    {
-        transform(basis, points_[i]);
-        points_[i] /= scale;
-    }
-}
-
-const Foam::point& Foam::cubicFitStencil::operator[](int i) const
-{
-    return points_[i];
-}
 
 // ************************************************************************* //

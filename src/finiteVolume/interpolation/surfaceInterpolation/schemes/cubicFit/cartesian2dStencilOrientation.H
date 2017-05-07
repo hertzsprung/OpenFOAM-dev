@@ -22,82 +22,73 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::cubicFitStencil
+    Foam::cartesian2dStencilOrientation
 
 Description
-    Models a stencil geometry in the mesh coordinate system or a
-    coordinate system local to the stencil.  The origin of the stencil is the
-    interpolation face centre.
 
 SourceFiles
-    cubicFitStencil.C
+    cartesian2dStencilOrientation.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef cubicFitStencil_H
-#define cubicFitStencil_H
+#ifndef cartesian2dStencilOrientation_H
+#define cartesian2dStencilOrientation_H
 
-#include "cubicFitBasis.H"
 #include "cubicFitStencilOrientation.H"
-#include "List.H"
-#include "point.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
-class cubicFitStencilOrientation;
-
 /*---------------------------------------------------------------------------*\
-                         Class cubicFitStencil Declaration
+                 Class cartesian2dStencilOrientation Declaration
 \*---------------------------------------------------------------------------*/
 
-class cubicFitStencil
+class cartesian2dStencilOrientation
+:
+    public cubicFitStencilOrientation
 {
     // Private data
 
-        point origin_;
-        List<point> points_;
+        //- Description of data_
 
 
     // Private Member Functions
 
-        void transform
-        (
-            const cubicFitBasis& basis,
-            point& p
-        );
-
         //- Disallow default bitwise copy construct
-        cubicFitStencil(const cubicFitStencil&);
+        cartesian2dStencilOrientation(const cartesian2dStencilOrientation&);
 
         //- Disallow default bitwise assignment
-        void operator=(const cubicFitStencil&);
+        void operator=(const cartesian2dStencilOrientation&);
 
 
 public:
 
     // Constructors
 
-        //- Construct from components
-        cubicFitStencil
-        (
-            const point& origin,
-            const List<point>& points
-        );
+        cartesian2dStencilOrientation();
+
+
+    //- Destructor
+//    ~cartesian2dStencilOrientation();
 
 
     // Member Functions
 
-        label size() const;
+        virtual void orient                                                             (
+            const Foam::cubicFitStencil& stencil,
+            Foam::cubicFitBasis& basis
+        ) const;
 
-        void transform(const cubicFitStencilOrientation& orientation);
+        // Access
 
+        // Check
 
-    // Member Operators
+        // Edit
 
-        const point& operator[](int i) const;
+        // Write
+
 
 };
 

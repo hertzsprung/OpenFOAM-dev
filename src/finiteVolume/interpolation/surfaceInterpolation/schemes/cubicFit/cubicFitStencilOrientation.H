@@ -25,9 +25,10 @@ Class
     Foam::cubicFitStencilOrientation
 
 Description
+    Pure virtual abstract base class for orienting stencils.
 
 SourceFiles
-    cubicFitStencilOrientation.C
+    cubicFitStencilOrientationI.H
 
 \*---------------------------------------------------------------------------*/
 
@@ -41,6 +42,8 @@ SourceFiles
 
 namespace Foam
 {
+
+class cubicFitStencil;
 
 /*---------------------------------------------------------------------------*\
                          Class cubicFitStencilOrientation Declaration
@@ -79,6 +82,10 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "cubicFitStencilOrientationI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

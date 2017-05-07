@@ -39,13 +39,7 @@ void Foam::cubicFitWeights::fit
     {
         const cubicFitPolynomial polynomial;
         cubicFitStencil stencil(mesh_.Cf()[faceI], stencilGeometries[faceI]);
-        const cubicFitBasis basis
-        (
-            vector(1, 0, 0),
-            vector(0, 1, 0),
-            vector(0, 0, 1)
-        );
-        stencil.transform(basis);
+        stencil.transform(orientation_);
 
         polynomial.fitTo(stencil, weights[faceI]);
     }
@@ -58,10 +52,12 @@ void Foam::cubicFitWeights::fit
 Foam::cubicFitWeights::cubicFitWeights
 (
     const fvMesh& mesh,
+    const cubicFitStencilOrientation& orientation,
     const extendedUpwindCellToFaceStencil& stencil
 )
 :
 mesh_(mesh),
+orientation_(orientation),
 ownerWeights_(mesh.nFaces()),
 neighbourWeights_(mesh.nFaces())
 {
