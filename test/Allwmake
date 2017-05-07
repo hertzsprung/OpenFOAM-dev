@@ -20,6 +20,7 @@ wmakeCheckPwd "$WM_PROJECT_DIR/test" || {
 
 wmake $targetType
 blockMesh -case resources/cartesian4x3Mesh
+blockMesh -case resources/cartesian3x4Mesh
 testOpenFOAM
 
 #------------------------------------------------------------------------------

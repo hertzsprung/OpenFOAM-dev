@@ -50,6 +50,11 @@ class stencilOrientation
 :
     public Foam::cubicFitStencilOrientation
 {
+    // Private data
+
+        const Foam::vector i_;
+        const Foam::vector j_;
+        const Foam::vector k_;
 
     // Private Member Functions
 
@@ -72,14 +77,14 @@ public:
         );
 
     //- Destructor
-        virtual ~stencilOrientation() {};
+        virtual ~stencilOrientation();
 
     // Member Functions
+
         virtual void orient                                                             (
             const Foam::cubicFitStencil& stencil,
             Foam::cubicFitBasis& basis
         ) const;
-
 
         // Access
 

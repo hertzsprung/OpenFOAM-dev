@@ -35,10 +35,28 @@ Test::stencilOrientation::stencilOrientation
     const vector& j,
     const vector& k
 )
+:
+i_(i),
+j_(j),
+k_(k)
+{}
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Test::stencilOrientation::~stencilOrientation()
 {}
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-
+void Test::stencilOrientation::orient
+(
+    const cubicFitStencil& stencil,
+    cubicFitBasis& basis
+) const
+{
+    basis.i() = i_;
+    basis.j() = j_;
+    basis.k() = k_;
+}
 
 // ************************************************************************* //
